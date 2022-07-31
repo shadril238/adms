@@ -1,0 +1,69 @@
+
+#shadril238
+
+1.
+declare
+ eno emp.empno%type:=:Employee_No;
+ enm emp.ename%type;
+ ejd emp.hiredate%type;
+ edesig emp.job%type;
+begin
+ select ename, hiredate, job into enm, ejd, edesig from emp where empno=7839;
+ dbms_output.put_line(enm);
+ dbms_output.put_line(ejd);
+ dbms_output.put_line(edesig);
+end;
+
+2.
+declare
+ dno dept.deptno%type:=:Dept_No;
+ t_emp number(10);
+ sum_sal emp.sal%type;
+begin
+ select count(*), sum(sal) into t_emp, sum_sal from emp,dept where emp.deptno=dept.deptno and emp.deptno=dno;
+ dbms_output.put_line('Total emp = '||t_emp);
+ dbms_output.put_line('Sum of salary = '||sum_sal);
+end;
+
+3.
+declare 
+ rad number(10):=:Enter_Radius;
+ area number(10,3);
+begin
+ area:=3.1416*rad*rad;
+ dbms_output.put_line('Area = '||area);
+end;
+
+4.
+declare
+ 
+begin
+ update emp set comm=1200 where job='MANAGER' and sal=(select min(sal) from emp where job='MANAGER');
+end;
+
+5.
+declare
+ dno dept.deptno%type;
+begin
+ select max(deptno) into dno from dept;
+ insert into dept values(dno+10, 'HR','TEXAS');
+end;
+
+6.
+declare
+ eno emp.empno%type:=:emp_no;
+ esal emp.sal%type;
+ experience number(2);
+begin
+ select round(months_between(sysdate, hiredate)/12), sal into experience, esal from emp where empno=eno;
+ if(experience>7) then
+     esal:=esal+(esal*5/100);
+ elsif(experience>=5 and experience<=7) then
+     esal:=esal+(esal*7/100);
+ elsif(experience>=3 and experience<=5) then
+     esal:=esal+(esal*10/100);
+ else
+     esal:=esal+(esal*12/100);
+ end if;
+ update emp set sal=esal where empno=eno;
+end;

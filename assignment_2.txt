@@ -1,0 +1,89 @@
+1.
+declare
+total_cr number;
+begin
+select count(cnum)*3 into total_cr from enroll where snum = ‘111’;
+if total_cr between 0 and 30 then
+update sstudent set standing = 1 where snum = ‘111’;
+elsif total_cr between 31 and 60 then
+update sstudent set standing = 2 where snum = ‘111’;
+elsif total_cr between 61 and 90 then
+update sstudent set standing = 3 where snum = ‘111’;
+elsif total_cr >91
+update sstudent set standing = 4 where snum = ‘111’;
+end if;
+end;
+2.
+create or replace procedure AddCourse(psnum sstudent.snum%type, pcnum course.cnum%type)
+is
+isValidcourse number;
+isValidSudent number;
+isStillRoom number;
+takenCredit number;
+prevgrade enroll.grade%type;
+isValidTocarry number;
+begin
+isValidcourse:=CheckValidCourse(pcnum);
+isValidSudent:=CheckValidStudent(psnum);
+isStillRoom:=CheckClassCapacity(pcnum);
+isValidTocarry:=CheckStanding(psnum, pcnum);
+select count(enroll.cnum)*3 into takenCredit from enroll where grade is null and snum = psnum;
+select grade into prevgrade from enroll where cnum = pcnum and snum = psnum;
+if isValidcourse = 1 and isValidSudent = 1
+and isStillRoom = 1 and isValidTocarry = 1
+and takenCredit < 13 and prevgrade is null
+then
+insert into enroll (snum,cnum) values (psnum,pcnum);
+end if;
+end;
+3.
+create or replace function CheckValidStudent(psnum sstudent.snum%type) return number is
+sid sstudent.snum%type;
+begin
+select snum into sid from sstudent where snum = psnum;
+if sid is null then
+return 0;
+else
+return 1;
+end if;
+end;
+4.
+create or replace function CheckValidCourse(pcnum course.cnum%type) return number is
+pid course.cnum%type;
+begin
+select cnum into pid from course where cnum = pcnum;
+if pid is null then
+return 0;
+else
+return 1;
+end if;
+end;
+5.
+create or replace function CheckStanding(ssnum sstudent.snum%type , ccnum
+course.cnum%type) return number
+is
+sst sstudent.standing%type;
+cst course.standing%type;
+begin
+select standing into sst from sstudent where snum = ssnum;
+select standing into cst from course where cnum = ccnum;
+if sst >= cst then
+return 1;
+else
+return 0;
+end if;
+end;
+6.
+create or replace function CheckClassCapacity(ccnum course.cnum%type) return number
+is
+cts course.capacity%type;
+cfill course.capacity%type;
+begin
+select count(enroll.cnum) into cfill from enroll where enroll.cnum = ccnum;
+select capacity into cts from course where cnum = ccnum;
+if cts > cfill then
+return 1;
+else
+return 0;
+end if;
+end;

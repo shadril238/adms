@@ -1,0 +1,98 @@
+Shadril Hassan Shifat[20-42451-1]
+ADMS[C]
+Assignment-1
+--------------------------------------------
+
+1.
+declare
+ssnum sstudent.snum%type:=:snum;
+t_cr number(3);
+begin
+select count(cnum)*3 into t_cr from enroll where snum=ssnum;
+if t_cr between 0 and 30 then
+update sstudent set standing = 1 where snum = ssnum;
+elsif t_cr between 31 and 60 then
+update sstudent set standing = 2 where snum = ssnum;
+elsif t_cr between 61 and 90 then
+update sstudent set standing = 3 where snum = ssnum;
+elsif t_cr > 91 then
+update sstudent set standing = 4 where snum = ssnum;
+end if;
+end;
+
+2.
+create or replace function CheckValidStudent(psnum sstudent.snum%type) 
+return boolean 
+is
+c_snum sstudent.snum%type:=0;
+begin
+select count(snum) into c_snum from sstudent where snum = psnum;
+if c_snum<=0 then
+return false;
+else
+return true;
+end if;
+end;
+
+create or replace function CheckValidCourse(pcnum course.cnum%type) 
+return boolean
+is
+c_cnum course.cnum%type:=0;
+begin
+select count(cnum) into c_cnum from course where cnum = pcnum;
+if c_cnum<=0 then
+return false;
+else
+return true;
+end if;
+end;
+
+create or replace function CheckStanding(psnum sstudent.snum%type,pcnum course.cnum%type) 
+return boolean
+is
+s_st sstudent.standing%type;
+c_st course.standing%type;
+begin
+select standing into s_st from sstudent where snum = psnum;
+select standing into c_st from course where cnum = pcnum;
+if s_st>=c_st then
+return true;
+else
+return false;
+end if;
+end;
+
+create or replace function CheckClassCapacity(pcnum course.cnum%type) 
+return boolean
+is
+c_cap course.capacity%type;
+c_cnt course.capacity%type;
+begin
+select count(cnum) into c_cnt from enroll where cnum = pcnum;
+select capacity into c_cap from course where cnum = pcnum;
+if c_cap < c_cnt then
+return true;
+else
+return false;
+end if;
+end;
+
+create or replace procedure AddCourse(psnum in out sstudent.snum%type, pcnum in out course.cnum%type)
+is
+validCourse boolean;
+validStudent boolean;
+classCapacity boolean;
+check_Standing boolean;
+t_cr number(10);
+isnum sstudent.snum%type:=psnum;
+icnum course.cnum%type:=pcnum;
+begin
+validCourse:=CheckValidCourse(pcnum);
+validStudent:=CheckValidStudent(psnum);
+classCapacity:=CheckClassCapacity(pcnum);
+check_Standing:=CheckStanding(psnum, pcnum);
+select count(cnum)*3 into t_cr from enroll where grade='A' and snum = psnum;
+if validCourse  and validStudent and classCapacity and check_Standing and t_cr <= 12  then
+insert into enroll values(7,isnum,icnum, NULL);
+end if;
+end;

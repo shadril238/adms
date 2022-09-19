@@ -1,0 +1,82 @@
+Shadril Hassan Shifat[20-42451-1]
+ADMS[C]
+Lab Quiz
+-------------------------------------------------
+1.
+create or replace procedure CountVacancies(dno in dept.deptno%type)
+is
+cntVac number:=-1;
+begin
+select 10-count(*) into cntVac from emp where deptno=dno;
+if cntVac<0 then 
+cntVac:=0;
+end if;
+dbms_output.put_line('Number of Vacanciies: '||cntVac);
+end;
+
+2.
+create or replace package emp_dept_details
+is
+procedure retrieve_emp(eno in out emp.empno%type);
+procedure total_sal(dno in dept.deptno%type);
+end emp_dept_details;
+
+create or replace package body emp_dept_details
+as
+function dept_sal(dno dept.deptno%type)
+return number
+is
+dsal number;
+begin
+select sum(sal) into dsal from emp where deptno=dno; 
+return dsal;
+end dept_sal;
+
+procedure retrieve_emp(eno in emp.empno%type)
+as
+e_name emp.ename%type;
+e_job emp.job%type;
+e_hiredate emp.hiredate%type;
+inval_empno exception;
+begin
+if eno<=0 then
+raise inval_empno;
+else
+select ename into e_name, job into e_job, hiredate into e_hiredate from emp where empno=eno;
+end if;
+dbms_output.put_line('Employee Name : '||e_name);
+dbms_output.put_line('Employee Job : '||e_job);
+dbms_output.put_line('Employee Hiredate : '||e_hiredate);
+exception
+when inval_empno then 
+raise_application_error(-20500,'Empno must be grater than zero');
+when no_data_found then 
+raise_application_error(-20501,'No employee found');
+when others then
+raise_application_error(-20502,'Something went wrong');
+end retrieve_emp;
+
+procedure total_sal(dno in dept.deptno%type)
+is
+t_sal number;
+begin
+t_sal:=dept_sal(dno);
+dbms_output.put_line('Total Salary of the department : '||t_sal);
+end total_sal;
+end emp_dept_details;
+
+3. 
+create or replace trigger salary_change_monitoring before update of sal on emp
+for each row
+declare
+osal number;
+nsal number;
+tsal number;
+begin
+osal:= :old.sal;
+nsal:= :new.sal;
+tsal:=nsal/osal;
+if tsal>1.2 OR tsal<0.8 then
+    raise_application_error(-20450,'employee’s salary cannot be changed by more than 20% of the original salary');
+end if;
+end;

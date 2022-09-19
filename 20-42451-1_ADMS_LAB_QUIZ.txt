@@ -1,0 +1,30 @@
+Advance Database Management System - Lab Quiz
+
+Name: Shadril Hassan Shifat
+ID: 20-42451-1
+Sec: C
+
+****************************************************************************************************************
+1. select e.*, s.grade, d.dname from emp e, dept d, salgrade s where e.deptno=d.deptno and e.sal between losal and hisal and e.job='CLERK';
+
+3. select e.*, s.grade, d.dname from emp e, dept d, salgrade s where e.deptno=d.deptno and e.sal between losal and hisal and e.deptno in (10,20) and s.grade=2 and e.empno in (select mgr from emp);
+
+4. select * from emp where sal in (select max(e.sal) from emp e, dept d, salgrade s where e.deptno=d.deptno and e.sal between losal and hisal and e.job='ANALYST' and d.dname='FINANCE' and s.grade in (2,3));
+
+5. select e.*,d.dname from emp e, dept d where e.deptno=d.deptno and e.hiredate in (select min(hiredate) from emp);
+
+6. select e.deptno, e.ename, e.job, e.sal, s.grade from emp e, salgrade s where e.sal between s.losal and s.hisal and e.deptno in ( select deptno from emp group by deptno having count(*) in ( select max(count(*)) from emp group by deptno));
+
+7. select s.grade from emp e, salgrade s where e.sal between s.losal and s.hisal and e.job='SALESMAN' group by grade having count(*) in (select max(count(*)) from emp e, salgrade s where e.sal between s.losal and s.hisal and e.job='SALESMAN' group by grade);
+
+8. select e.*, s.grade, d.loc from emp e, dept d, salgrade s where e.deptno=d.deptno and e.sal between s.losal and s.hisal and e.job='SALESMAN' and s.grade in (2,3) and d.loc in ('CHICAGO', 'DALLAS');
+
+9. select deptno,loc from dept where deptno in (select deptno from emp group by deptno having count(*) in (select max(count(*)) from emp group by deptno));
+
+10.select e.*,s.grade from emp e, salgrade s where e.sal between s.losal and s.hisal and e.empno in (select mgr from emp);
+
+12.select e.* , d.loc, s.grade from emp e, dept d, salgrade s where e.deptno=d.deptno and e.sal between s.losal and s.hisal and d.loc='DALLAS' and s.grade in (3,4) and e.empno in (select mgr from emp);
+
+14.select e.* from emp e, emp em, emp ec, dept d, dept dm, dept dc, salgrade s, salgrade sm, salgrade sc where e.deptno=d.deptno and em.deptno=dm.deptno and ec.deptno=dc.deptno and e.sal between s.losal and  s.hisal and ec.sal between sc.losal and sc.hisal and e.job='SALESMAN' and em.ename='MILLER' and ec.job='CLARK' and s.grade=sc.grade and d.loc=dm.loc ;
+
+

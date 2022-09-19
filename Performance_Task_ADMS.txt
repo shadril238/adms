@@ -1,0 +1,64 @@
+ADMS[C]
+1. Shadril Hassan Shifat (20-42451-1)
+2. Anika Saba Ibte Sum (20-43242-1)
+----------------------------------------------------------------------------
+
+create package user_dml
+as
+procedure user_insert(uid user.userid%type, upass user.user_pass%type, uname user.username%type, uemail user.useremail%type, uphn user.userphn%type, mgrid user.mgr_id%type);
+procedure user_delete(uid user.userid%type);
+end user_dml;
+
+create or replace package body user_dml
+is
+ procedure user_insert(uid user.userid%type)
+ is
+ begin
+  if(valid_mgrid(mgrid)) then 
+   insert into user values(uid, uname, upass,uemail, uphn, mgrid);
+  else
+   dbms_output.put_line('Mgr Id not exist!');
+  end if;
+ end user_insert;
+ 
+ procedure user_delete(uid user.userid%type)
+ is
+ begin
+   delete from user where userid=uid;
+ end user_delete;
+
+ function valid_mgrid(mgrid mgr.mgr_id%type)
+ return boolean
+ is 
+ countx number;
+ status boolean;
+ begin
+  select count(*) into countx from mgr where mgr_id=mgrid;
+  if countx then
+   return TRUE;
+  else 
+   return FALSE;
+ end if;
+ end valid_mgrid;
+end user_dml;
+------------------------------------------------
+Declare
+ uid user.userid%type:=:user_id;
+ inval_userid exception;
+ begin
+  if uid<=0 then
+   raise inval_userid;
+  else 
+   user_dml.user_delete(uid);
+  end if;
+ exception
+  when invval_userid then
+   dbms_output.put_line('User Id must be grater than 0');
+  when no_data_found then
+   dbms_output.put_line('user id not found');
+  when others
+   dbms_output.put_line('Something went wrong');
+End;
+
+ 
+ 

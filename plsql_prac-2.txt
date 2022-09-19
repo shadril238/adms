@@ -1,0 +1,85 @@
+declare 
+ n number(10):=:Enter_n;
+begin
+ n:=(2*n)-1;
+ loop
+  dbms_output.put_line(n);
+  n:=n-2;
+  exit when n<1;
+ end loop;
+end;
+ 
+declare
+ n number(10):=:Enter_n;
+ i number(10):=1;
+ fact number(10):=1;
+begin
+ while i<=n
+ loop
+  fact:=fact*i;
+  dbms_output.put_line(fact);
+  i:=i+1;
+ end loop;
+end;
+
+declare
+ n number(10):=:Enter_n;
+ i number(10);
+ flg number(1):=1;
+begin
+ for i in 2..n-1
+ loop
+  if(n mod i=0) then
+    flg:=0;
+    exit;
+  end if;
+ end loop;
+ if(flg=1) then
+  dbms_output.put_line(n ||' is a prime number');
+ else
+  dbms_output.put_line(n ||' is not a prime number');
+ end if;
+end;
+ 
+
+select * from emp;   
+declare
+ cursor c1
+ is
+ select empno, sal from emp;
+ i number(10);
+ esal emp.sal%type;
+begin
+ for i in c1 loop
+  esal:=i.sal;
+  if(esal>5000) then
+   esal:=esal+(esal*5/100);
+   update emp set sal=esal where empno=i.empno;
+  elsif(esal>4000 and esal<=5000) then
+   esal:=esal+(esal*7/100);
+   update emp set sal=esal where empno=i.empno;
+  elsif(esal>3000 and esal<=4000) then
+   esal:=esal+(esal*10/100);
+   update emp set sal=esal where empno=i.empno;
+  else
+   esal:=esal+(esal*12/100);
+   update emp set sal=esal where empno=i.empno;
+  end if;
+ end loop;
+end;
+
+declare
+ n number(10):=:Enter_n;
+ f0 number(10):=0;
+ f1 number(10):=1;
+ next number(10);
+ i number(10);
+begin
+ for i in 1..n
+ loop
+  dbms_output.put_line(f1);
+  next:=f0+f1;
+  f0:=f1;
+  f1:=next;
+ end loop;
+end;
